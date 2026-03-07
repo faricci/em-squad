@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+memory/history/*.jsonl
+memory/notes/*.md
+memory/observations/*.md

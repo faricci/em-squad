@@ -1,0 +1,20 @@
+agents:
+  - id: note-triage
+    name: Note Triage
+    description: Triages raw EM notes into park / task / assign
+    contract: contracts/note-triage-agent.yaml
+    module: src.agents.note_triage
+    entry: triage_note
+    input_prompt: "Enter your note:"
+    output_type: triage
+    distributor: markdown
+
+  - id: onboarding
+    name: Onboard New Agent
+    description: Registers a new agent into the system from a natural language description
+    contract: contracts/onboarding-agent.yaml
+    module: src.agents.onboarding
+    entry: onboard_agent
+    input_prompt: "Describe the new agent (purpose, responsibilities, expected input/output):"
+    output_type: onboarding
+    distributor: markdown

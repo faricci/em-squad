@@ -1,0 +1,65 @@
+name: note-triage
+version: 0.1.0
+author: Fabiano Aricci
+description: >
+  Triages raw Engineering Manager notes into structured work items.
+  Classifies notes as park / task / assign, estimates effort, suggests
+  an owner based on team context, and drafts acceptance criteria.
+
+category: engineering-management
+tags: [em, triage, note-to-task, cdlc, context-engineering]
+
+inputs:
+  - name: note
+    type: string
+    description: Raw note text from the EM (free text, voice memo transcript, Slack snippet)
+    required: true
+  - name: team_roster
+    type: string
+    description: Markdown content of the team roster context file
+    required: true
+  - name: team_conventions
+    type: string
+    description: Markdown content of the team conventions context file
+    required: true
+
+outputs:
+  - name: decision
+    type: enum[park, task, assign]
+  - name: reasoning
+    type: string
+  - name: effort
+    type: enum[small, medium, large, null]
+  - name: suggested_owner
+    type: string | null
+  - name: acceptance_criteria
+    type: string[]
+  - name: related_context
+    type: string[]
+  - name: original_note
+    type: string
+  - name: timestamp
+    type: string  # ISO 8601
+
+evals:
+  - name: classification_accuracy
+    description: >
+      Note is correctly classified as actionable (task/assign) vs not-yet (park)
+      in >90% of cases when compared to EM's final decision.
+    type: human_judgment
+  - name: assignee_accuracy
+    description: >
+      Suggested owner matches EM's chosen assignee in >70% of cases.
+    type: human_judgment
+  - name: no_note_loss
+    description: >
+      Every input note produces a persisted output record. Zero silent drops.
+    type: automated
+
+compatibility:
+  agents: [claude-sonnet-4-6, claude-opus-4-6]
+  runtime: [claude-code, anthropic-api]
+  registry: tessl.io/registry
+
+cdlc_layer: 3  # Packaging — skill is a reusable, versioned, distributable unit
+source: skills/note-triage/skill.md

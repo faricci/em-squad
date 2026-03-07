@@ -1,0 +1,65 @@
+contract:
+  name: "Onboarding Agent"
+  version: "0.1.0"
+  purpose: >
+    Register a new agent into em-squad from a natural language description.
+    Given a plain-English description of what an agent should do, produce a
+    complete, reviewable set of artifacts — contract, Python skeleton, registry
+    entry — ready for the EM to review and confirm before any files are written.
+  owner: "EM Agent"
+  layer: 4  # CDLC Layer 4 — Orchestration
+
+  responsibilities:
+    - Parse the natural language description into structured agent intent
+    - Generate a valid C-DAD contract YAML following the note-triage-agent.yaml template
+    - Generate a Python skeleton module following the src/agents/note_triage.py template
+    - Produce the agents.yaml registry entry for the new agent
+    - Return all artifacts for EM review — never write files automatically
+
+  boundaries:
+    - Cannot modify existing agents or their contracts
+    - Cannot delete or overwrite existing registry entries
+    - Cannot write files to disk — output must be reviewed by the EM first (human-in-the-loop)
+    - Cannot register an agent without a unique id (no duplicates)
+    - Must follow the C-DAD contract structure — no fields may be omitted
+
+  output_schema:
+    agent_id: "kebab-case identifier derived from the agent's purpose"
+    contract_yaml: "full YAML content — to be written to contracts/<id>-agent.yaml"
+    python_skeleton: "full Python module content — to be written to src/agents/<id>.py"
+    registry_entry: "dict matching the agents.yaml entry schema"
+    summary: "human-readable description of what was created and why"
+
+  validation:
+    - Generated contract contains all required C-DAD fields (name, version, purpose, owner,
+      layer, responsibilities, boundaries, output_schema, validation, cdlc_mapping,
+      promotion_rules)
+    - Generated Python skeleton imports correctly and defines the required entry function
+    - Registry entry contains all required fields (id, name, description, contract,
+      module, entry, input_prompt, output_type)
+    - agent_id is unique — does not already exist in agents.yaml
+    - All generated YAML is syntactically valid
+
+  context_sources:
+    - "contracts/note-triage-agent.yaml"     # Template for contract generation
+    - "src/agents/note_triage.py"            # Template for Python skeleton generation
+    - "agents.yaml"                          # Current registry — to check for duplicates
+
+  open_questions:
+    - Should the agent validate the generated skeleton runs without errors before presenting?
+    - Should the onboarding agent suggest a skill.md for the new agent as well?
+    - Phase 3: can onboarding auto-run after EM confirms, or always require manual copy-paste?
+
+  cdlc_mapping:
+    generate: "Natural language description is the raw input context from the EM"
+    evaluate: "Claude generates contract, skeleton, and registry entry from the description"
+    distribute: "Artifacts shown to EM for review; written to disk only after confirmation"
+    observe: "Each onboarding event logged to memory/history/ (which agents were created)"
+
+  promotion_rules:
+    - name: "contract_template_promotion"
+      trigger: "EM edits the generated contract in the same pattern 3+ times"
+      action: "L5 → L4: update the onboarding prompt with the correction"
+    - name: "skeleton_template_promotion"
+      trigger: "EM rewrites the generated skeleton structure consistently"
+      action: "L5 → L4: update the skeleton template in the onboarding agent's skill prompt"

@@ -1,0 +1,70 @@
+contract:
+  name: "EM Agent"
+  version: "0.1.0"
+  purpose: >
+    Orchestrate a team of AI sub-agents that mirror real engineering team roles.
+    Translate business context into work items, synthesize observations into
+    patterns, and escalate decisions that require human judgment.
+  owner: "Human EM (Fabiano Aricci)"
+  layer: 4  # CDLC Layer 4 — Orchestration
+
+  responsibilities:
+    - Delegate incoming inputs to appropriate sub-agents
+    - Review sub-agent outputs before they become work items
+    - Synthesize weekly observations into retrospective summaries
+    - Translate sprint goals into agent instructions
+    - Resolve contradictions between sub-agent outputs
+    - Trigger context evaluation when artifacts become stale
+    - Distribute context updates across all sub-agents
+
+  boundaries:
+    - Cannot approve production deployments (must escalate to human EM)
+    - Cannot send external communications on behalf of the team
+    - Cannot hire, fire, or modify team structure
+    - Cannot override sub-agent validation failures without human review
+
+  escalation_triggers:
+    - Sub-agent confidence below 70%
+    - Decision affects more than one team member
+    - Security or compliance implications detected
+    - Cost impact above defined threshold
+    - Conflicting outputs from two or more sub-agents
+
+  sub_agents:
+    - name: "Note Triage Agent"
+      contract: "contracts/note-triage-agent.yaml"
+      trigger: "raw EM note input"
+    - name: "DevOps Agent"
+      contract: "contracts/devops-agent.yaml"
+      trigger: "infrastructure or CI/CD events"
+      status: "planned"
+    - name: "Dev Agent"
+      contract: "contracts/dev-agent.yaml"
+      trigger: "code review or architecture questions"
+      status: "planned"
+    - name: "QA Agent"
+      contract: "contracts/qa-agent.yaml"
+      trigger: "test coverage or quality signals"
+      status: "planned"
+
+  context_sources:
+    - "context/team-roster.md"
+    - "context/team-conventions.md"
+    - "memory/observations/"
+
+  validation:
+    - Every input produces a traceable output (no silent drops)
+    - Sub-agent outputs include reasoning, not just decisions
+    - Escalations are logged with the trigger that caused them
+    - Context sources are checked for staleness at session start
+
+  open_questions:
+    - How to detect context staleness without a persistent runtime?
+    - Should the EM agent have memory across sessions (file-based vs LanceDB)?
+    - At what volume does file-based history need indexing?
+
+  cdlc_mapping:
+    generate: "Incoming notes, PRs, alerts trigger sub-agents"
+    evaluate: "Sub-agent outputs reviewed against contract validation rules"
+    distribute: "Approved outputs promoted to task systems and team context"
+    observe: "Decision logs feed pattern detection for vertical promotion"

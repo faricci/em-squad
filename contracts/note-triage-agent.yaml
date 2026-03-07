@@ -1,0 +1,75 @@
+contract:
+  name: "Note Triage Agent"
+  version: "0.1.0"
+  purpose: >
+    Transform raw EM notes into governed, actionable work items.
+    Every note that enters this agent exits with a decision, a rationale,
+    and enough structure to be acted upon without follow-up questions.
+  owner: "EM Agent"
+  layer: 4  # CDLC Layer 4 — Orchestration
+
+  responsibilities:
+    - Parse unstructured notes into structured intent
+    - Classify note as actionable (task/assign) or not yet (park)
+    - Assess effort: small (< 1 day) / medium (1-3 days) / large (> 3 days)
+    - Suggest assignee based on team roster skills and current load
+    - Detect potential duplicates by referencing active work items context
+    - Enrich actionable notes with draft acceptance criteria
+    - Preserve original note text verbatim in the output record
+
+  boundaries:
+    - Cannot assign tasks without EM confirmation (human-in-the-loop required)
+    - Cannot delete or modify existing tasks in any task system
+    - Cannot access external APIs directly (tool-agnostic output only)
+    - Must preserve original note — no summarization that loses intent
+
+  decision_outcomes:
+    park:
+      description: "Note is not actionable yet — idea, observation, or future consideration"
+      action: "Store in memory/notes/ with tags and timestamp"
+    task:
+      description: "Note is actionable but owner is unclear or workload is uncertain"
+      action: "Produce structured task definition for EM to assign manually"
+    assign:
+      description: "Note is actionable AND a clear owner match exists in the team roster"
+      action: "Produce task definition with suggested owner for EM to confirm"
+
+  output_schema:
+    decision: "park | task | assign"
+    reasoning: "string — why this decision was made"
+    effort: "small | medium | large | null (for park)"
+    suggested_owner: "string (team member name) | null"
+    acceptance_criteria: "string[] — draft criteria (empty for park)"
+    related_context: "string[] — references to related notes or tasks"
+    original_note: "string — verbatim input preserved"
+    timestamp: "ISO 8601"
+
+  validation:
+    - Note correctly classified (actionable vs park) >90% of the time
+    - Suggested assignee matches EM's final choice >70% of the time
+    - No notes are lost — every input produces a persisted output record
+    - Acceptance criteria are specific, not generic ("Fix the bug" is not acceptable)
+
+  context_sources:
+    - "context/team-roster.md"         # Who can own what
+    - "context/team-conventions.md"    # Task format, priority, effort definitions
+    - "memory/history/"                # Past decisions (detect recurring themes)
+
+  open_questions:
+    - How to handle notes that clearly span multiple tasks? Split or flag?
+    - Should priority be inferred or left to the EM? (currently: effort only)
+    - Integration target: Notion, GitHub Issues, or tool-agnostic JSON?
+
+  cdlc_mapping:
+    generate: "Raw note is captured context from the EM's head"
+    evaluate: "Agent assesses actionability, effort, ownership"
+    distribute: "Decision promoted to task system or parked in memory"
+    observe: "Decision log tracks park→task promotions and assignee accuracy"
+
+  promotion_rules:
+    - name: "routing_rule_promotion"
+      trigger: "Same assignee suggested correctly 5+ times for same task category"
+      action: "L5 → L4: promote to EM Agent routing instruction"
+    - name: "effort_calibration_promotion"
+      trigger: "Effort estimate corrected by EM 3+ times for same category"
+      action: "L5 → L4: update effort sizing instruction"
