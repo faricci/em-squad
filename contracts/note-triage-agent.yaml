@@ -1,12 +1,17 @@
 contract:
   name: "Note Triage Agent"
   version: "0.1.0"
+  lifecycle: active  # draft | active | deprecated | retired
   purpose: >
     Transform raw EM notes into governed, actionable work items.
     Every note that enters this agent exits with a decision, a rationale,
     and enough structure to be acted upon without follow-up questions.
   owner: "EM Agent"
   layer: 4  # CDLC Layer 4 — Orchestration
+  provenance:
+    author: "Fabiano Ricci"
+    published: "2026-03-07"
+    adr: null  # Phase 3: docs/adr/ADR-001-note-triage-agent.md
 
   responsibilities:
     - Parse unstructured notes into structured intent

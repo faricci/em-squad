@@ -137,8 +137,10 @@ No code changes needed — the agent reads context at runtime.
 
 - **Phase 1 (done):** Note Triage Agent, Onboarding Agent, contracts, context files, history log
 - **Phase 2 (done):** Memory architecture (Hot/Cold/Audit, BM25), C-DAD runtime validation, pluggable distributor
-- **Phase 3:** CDLC in action — eval runner, vertical promotion, Notion/GitHub distributor, LanceDB vector search
-- **Phase 4:** Publication — GitHub README polish, Medium article, Tessl skill registry
+- **Phase 3:** Framework completion — eval runner, vertical promotion, ADR authoring (`docs/adr/`), contract lifecycle transitions, LanceDB vector search, Notion/GitHub distributor
+- **Phase 4:** Agent import — read existing EM assistant capabilities, translate into framework-compliant agents (contract + skill + Python skeleton + registry entry)
+- **Phase 5:** Templatization — setup wizard, remove personal context, framework usable by any EM team. Followed by a real-use branch (2+ weeks) to field-test before publication. Bugs found → fix on main branch.
+- **Phase 6:** Publication — Tessl skill registry → GitHub README polish → Medium article
 
 ---
 
@@ -147,7 +149,7 @@ No code changes needed — the agent reads context at runtime.
 - **CDLC (4 stages):** Patrick Debois / Tessl — [tessl.io/blog](https://tessl.io/blog/context-development-lifecycle-better-context-for-ai-coding-agents/)
 - **5-layer recursive CDLC model:** Fabiano Aricci (this framework)
 - **"Everything is Context" paper:** arXiv 2512.05470
-- **C-DAD:** Mastering Software Architecture for the AI Era (Medium)
+- **C-DAD (Contract-Driven AI Development):** Enrico Piovesan — [White Paper on Scribd](https://it.scribd.com/document/991003633/Contract-Driven-AI-Development-C-DAD-White-Paper)
 
 ## License
 

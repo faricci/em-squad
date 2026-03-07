@@ -159,14 +159,22 @@ today_summary()                       → dict (counts for daily CLI panel)
 
 ## C-DAD: Contract-Driven AI Development
 
+> Concept by **Enrico Piovesan** — [C-DAD White Paper](https://it.scribd.com/document/991003633/Contract-Driven-AI-Development-C-DAD-White-Paper)
+
 Each agent has a contract (in `contracts/`) that encodes:
 - **Intent** — why this agent exists
 - **Ownership** — who is responsible
+- **Lifecycle** — `draft | active | deprecated | retired` (explicit state, machine-readable)
+- **Provenance** — author, published date, ADR link
 - **Validation rules** — how to verify correctness
 - **Open questions** — what's still uncertain
 
 Contracts are not static documents. They evolve as patterns are promoted upward.
 A routing rule that starts as an EM correction (L5) can become a contract invariant (L2).
+
+**Phase 3 additions:** ADR documents (`docs/adr/`) linked from each contract's `provenance.adr`
+field — capturing why each agent was designed the way it was, alternatives considered,
+and decisions that must not be silently reversed.
 
 ---
 

@@ -1,6 +1,7 @@
 contract:
   name: "Onboarding Agent"
   version: "0.1.0"
+  lifecycle: active  # draft | active | deprecated | retired
   purpose: >
     Register a new agent into em-squad from a natural language description.
     Given a plain-English description of what an agent should do, produce a
@@ -8,6 +9,10 @@ contract:
     entry — ready for the EM to review and confirm before any files are written.
   owner: "EM Agent"
   layer: 4  # CDLC Layer 4 — Orchestration
+  provenance:
+    author: "Fabiano Ricci"
+    published: "2026-03-07"
+    adr: null  # Phase 3: docs/adr/ADR-002-onboarding-agent.md
 
   responsibilities:
     - Parse the natural language description into structured agent intent
@@ -31,9 +36,9 @@ contract:
     summary: "human-readable description of what was created and why"
 
   validation:
-    - Generated contract contains all required C-DAD fields (name, version, purpose, owner,
-      layer, responsibilities, boundaries, output_schema, validation, cdlc_mapping,
-      promotion_rules)
+    - Generated contract contains all required C-DAD fields (name, version, lifecycle, purpose,
+      owner, layer, responsibilities, boundaries, output_schema, validation, cdlc_mapping,
+      promotion_rules, provenance)
     - Generated Python skeleton imports correctly and defines the required entry function
     - Registry entry contains all required fields (id, name, description, contract,
       module, entry, input_prompt, output_type)

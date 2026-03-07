@@ -1,12 +1,17 @@
 contract:
   name: "EM Agent"
   version: "0.1.0"
+  lifecycle: active  # draft | active | deprecated | retired
   purpose: >
     Orchestrate a team of AI sub-agents that mirror real engineering team roles.
     Translate business context into work items, synthesize observations into
     patterns, and escalate decisions that require human judgment.
-  owner: "Human EM (Fabiano Aricci)"
+  owner: "Human EM (Fabiano Ricci)"
   layer: 4  # CDLC Layer 4 — Orchestration
+  provenance:
+    author: "Fabiano Ricci"
+    published: "2026-03-07"
+    adr: null  # Phase 3: docs/adr/ADR-000-em-agent-orchestrator.md
 
   responsibilities:
     - Delegate incoming inputs to appropriate sub-agents
