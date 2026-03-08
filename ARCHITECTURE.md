@@ -73,11 +73,12 @@ can become a governed organizational asset.
 
 ### Layer 3 — Packaging
 - `skills/note-triage/` — Tessl-compatible skill: `skill.md` (prompt) + `skill.yaml` (metadata)
+- `skills/onboarding/` — Tessl-compatible skill for the Onboarding Agent (same structure)
 - Skills are versioned, reusable, and can be published to tessl.io/registry
 
 ### Layer 4 — Orchestration
 - `src/orchestrator.py` — EM Agent: runs agents with C-DAD validation (lifecycle + pre-run + post-run) + distribution hooks
-- `squad.py` — Interactive CLI: action menu (Run Agent / Run Evals / Detect Promotions)
+- `squad.py` — Interactive CLI: action menu (Run Agent / Run Evals / Detect Promotions / Close Task)
 - `src/agents/note_triage.py` — Note Triage Agent: implements the triage contract
 - `src/agents/onboarding.py` — Onboarding Agent: generates new agent artifacts from description
 - `src/context_engine/validator.py` — C-DAD runtime validator (lifecycle check, pre-run context sources, post-run output schema)
@@ -100,12 +101,12 @@ can become a governed organizational asset.
 ### What is Python and why
 
 Python handles only **deterministic plumbing** — zero LLM reasoning lives here:
-- `loader.py` — reads markdown files from disk, assembles a context bundle
+- `loader.py` — contract-driven context loader: reads `context_sources` from the agent contract, assembles a `ContextBundle(sources, skill_prompt)` for any agent; `load_note_triage_context()` is a thin backward-compatible wrapper
 - `memory.py` — hot/cold/audit memory engine (BM25 search, audit log, daily summary)
 - `validator.py` — C-DAD runtime validation (pre-run context sources, post-run output schema)
 - `note_triage.py` — calls Claude API with enriched context (hot + cold memory), parses JSON response
 - `orchestrator.py` — runs agents with validation + distribution hooks; programmatic API entry point
-- `distributors/markdown.py` — writes triage decisions to `output/tasks.md` and `output/backlog.md`
+- `distributors/markdown.py` — writes triage decisions to `output/tasks.md` and `output/backlog.md`; also writes `output/tasks.jsonl` (status=open/closed) for task lifecycle tracking
 
 ### What is markdown and why
 
@@ -141,7 +142,7 @@ Three formal memory layers govern how agents access context and past decisions.
 - Phase 2 indexer: **BM25** (Okapi BM25, `rank-bm25`) — scores by term frequency + document length normalization, zero API cost
 - Injected as "Related past decisions" context block in the agent prompt
 - Routing rule: park decisions are skipped during search (not useful for recall)
-- Phase 3 upgrade path: LanceDB (MIT, embedded, no server) for semantic vector search when corpus exceeds ~10K decisions
+- Phase 5 upgrade path: LanceDB (MIT, embedded, no server) for semantic vector search when corpus exceeds ~10K decisions
 
 ### Audit Memory (`memory/history/*.jsonl`)
 - Same files as cold memory, formalized as an immutable audit log
@@ -200,8 +201,9 @@ src/distributors/
 
 Phase 2 baseline: `MarkdownDistributor`
 - `park`   → `output/backlog.md` (running log) + `memory/notes/<slug>.md` (individual file)
-- `task`   → `output/tasks.md` (running log)
-- `assign` → `output/tasks.md` (running log)
+- `task`   → `output/tasks.md` (running log) + `output/tasks.jsonl` (status=open)
+- `assign` → `output/tasks.md` (running log) + `output/tasks.jsonl` (status=open)
+- Task lifecycle: `output/tasks.jsonl` records `{id, date, decision, note, owner, effort, status}` — status transitions `open → closed` via the CLI Close Task action
 
 Phase 3 planned: `NotionDistributor`, `GitHubDistributor` — swap by changing one line in `agents.yaml`.
 

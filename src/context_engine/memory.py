@@ -10,7 +10,7 @@ Cold memory search uses BM25 (Okapi BM25) — a proven TF-IDF variant used by
 Elasticsearch and Lucene. Better than keyword matching: scores by term frequency
 and document length normalization. No embeddings, no API calls, zero cost.
 
-Future upgrade path (Phase 3):
+Future upgrade path (Phase 5):
     Replace _load_cold_entries() + BM25 ranking with LanceDB vector search
     (lancedb, MIT license, embedded, no server) when semantic recall matters
     more than exact term overlap or when corpus exceeds ~10K decisions.

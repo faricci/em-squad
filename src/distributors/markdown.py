@@ -2,10 +2,11 @@
 markdown.py — Default file-based distributor.
 
 park   → output/backlog.md (append) + memory/notes/<slug>.md
-task   → output/tasks.md (append)
-assign → output/tasks.md (append)
+task   → output/tasks.md (append) + output/tasks.jsonl (status=open)
+assign → output/tasks.md (append) + output/tasks.jsonl (status=open)
 """
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -88,7 +89,20 @@ class MarkdownDistributor:
                 f"| {date_str} | {decision.upper()} | {owner} | {effort} | {note_short} |\n"
             )
 
-        return "Distributed → output/tasks.md"
+        tasks_jsonl = output_dir / "tasks.jsonl"
+        record = {
+            "id": ts,
+            "date": date_str,
+            "decision": decision,
+            "note": note,
+            "owner": owner,
+            "effort": effort,
+            "status": "open",
+        }
+        with tasks_jsonl.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+
+        return "Distributed → output/tasks.md + output/tasks.jsonl"
 
 
 def _ensure_header(path: Path, header: str) -> None:

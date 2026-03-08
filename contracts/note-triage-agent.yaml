@@ -18,7 +18,6 @@ contract:
     - Classify note as actionable (task/assign) or not yet (park)
     - Assess effort: small (< 1 day) / medium (1-3 days) / large (> 3 days)
     - Suggest assignee based on team roster skills and current load
-    - Detect potential duplicates by referencing active work items context
     - Enrich actionable notes with draft acceptance criteria
     - Preserve original note text verbatim in the output record
 
@@ -64,6 +63,7 @@ contract:
     - How to handle notes that clearly span multiple tasks? Split or flag?
     - Should priority be inferred or left to the EM? (currently: effort only)
     - Integration target: Notion, GitHub Issues, or tool-agnostic JSON?
+    - "Duplicate detection: not yet implemented — requires a live task list as a context source"
 
   cdlc_mapping:
     generate: "Raw note is captured context from the EM's head"

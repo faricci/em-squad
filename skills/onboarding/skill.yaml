@@ -1,0 +1,36 @@
+name: onboarding
+version: 0.1.0
+author: Fabiano Aricci
+description: >
+  Generates a complete agent scaffold from a natural language description.
+  Produces a C-DAD contract YAML, a Python module skeleton, and an agents.yaml
+  registry entry — all framework-compliant and ready to register.
+
+category: engineering-management
+tags: [em, onboarding, agent-generation, cdlc, c-dad]
+
+inputs:
+  - name: description
+    type: string
+    description: Natural language description of the new agent (purpose, responsibilities, expected input/output)
+    required: true
+
+outputs:
+  - name: agent_id
+    type: string
+  - name: contract_yaml
+    type: string
+  - name: python_skeleton
+    type: string
+  - name: registry_entry
+    type: object
+  - name: summary
+    type: string
+
+compatibility:
+  agents: [claude-sonnet-4-6, claude-opus-4-6]
+  runtime: [claude-code, anthropic-api]
+  registry: tessl.io/registry
+
+cdlc_layer: 3  # Packaging — skill is a reusable, versioned, distributable unit
+source: skills/onboarding/skill.md

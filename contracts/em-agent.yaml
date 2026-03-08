@@ -61,10 +61,9 @@ contract:
     - Every input produces a traceable output (no silent drops)
     - Sub-agent outputs include reasoning, not just decisions
     - Escalations are logged with the trigger that caused them
-    - Context sources are checked for staleness at session start
 
   open_questions:
-    - How to detect context staleness without a persistent runtime?
+    - "How to detect context staleness without a persistent runtime? (staleness check at session start is aspirational — not currently implemented)"
     - Should the EM agent have memory across sessions (file-based vs LanceDB)?
     - At what volume does file-based history need indexing?
 

@@ -67,13 +67,15 @@ em-agent-framework/
 ├── agents.yaml             # Agent registry — single source of truth
 ├── squad.py                # Interactive CLI entry point
 ├── contracts/              # C-DAD contracts for each agent
-├── skills/                 # Tessl-compatible skill packages
+├── skills/
+│   ├── note-triage/        # Tessl-compatible skill (skill.md + skill.yaml)
+│   └── onboarding/         # Tessl-compatible skill (skill.md + skill.yaml)
 ├── context/                # Layer 2 artifacts: team roster, conventions, agent directives
 ├── memory/
 │   ├── history/            # Immutable audit log — JSONL, per day (Layer 1)
 │   ├── notes/              # Parked notes (Layer 1)
 │   └── observations/       # Promoted patterns (Layer 1)
-├── output/                 # Distributor output: tasks.md, backlog.md
+├── output/                 # Distributor output: tasks.md, backlog.md, tasks.jsonl (lifecycle)
 ├── docs/adr/               # Architecture Decision Records (5 retroactive ADRs)
 ├── evals/
 │   ├── fixtures/           # Gold-standard test notes (10 seeded fixtures)
@@ -144,8 +146,9 @@ No code changes needed — the agent reads context at runtime.
 - **Phase 1 (done):** Note Triage Agent, Onboarding Agent, contracts, context files, history log
 - **Phase 2 (done):** Memory architecture (Hot/Cold/Audit, BM25), C-DAD runtime validation, pluggable distributor
 - **Phase 3 (done):** Framework completion — 5 ADRs (`docs/adr/`), contract lifecycle enforcement (draft/deprecated/retired), eval runner with 10 fixture notes and EM correction loop, vertical promotion detector (JSONL scan → rule proposal → agent-directives.md)
+- **Gap closure (done):** 5 architectural gaps fixed before Phase 5 field test — task lifecycle (`output/tasks.jsonl` + Close Task CLI), onboarding skill file (`skills/onboarding/`), contract-driven loader (`load_agent_context()`), contract honesty (false promises moved to open_questions), docstring accuracy
 - **Phase 4:** Agent import — read existing EM assistant capabilities, translate into framework-compliant agents (contract + skill + Python skeleton + registry entry)
-- **Phase 5:** Templatization — setup wizard, remove personal context, framework usable by any EM team. Followed by a real-use branch (2+ weeks) to field-test before publication. Bugs found → fix on main branch.
+- **Phase 5:** Real-use branch — 2+ weeks field test with real notes, fix bugs on main branch. Then templatization (setup wizard, remove personal context) before publication.
 - **Phase 6:** Publication — Tessl skill registry → GitHub README polish → Medium article
 
 ---

@@ -61,8 +61,8 @@ def triage_note(raw_note: str) -> TriageDecision:
 def _build_user_message(note: str, context, hot_memory: str, cold_memory_ctx: str) -> str:
     return (
         f"## Hot Memory (always active)\n\n{hot_memory}\n\n"
-        f"---\n\n## Team Roster\n\n{context.team_roster}\n\n"
-        f"---\n\n## Team Conventions\n\n{context.team_conventions}\n\n"
+        f"---\n\n## Team Roster\n\n{context.sources.get('context/team-roster.md', '')}\n\n"
+        f"---\n\n## Team Conventions\n\n{context.sources.get('context/team-conventions.md', '')}\n\n"
         f"---\n\n## Related Past Decisions\n\n{cold_memory_ctx}\n\n"
         f"---\n\n## Note to Triage\n\n{note}"
     )

@@ -18,6 +18,7 @@ class AgentEntry:
     input_prompt: str
     output_type: str
     distributor: str = "markdown"
+    skill: str = ""
 
 
 def load_registry() -> list[AgentEntry]:

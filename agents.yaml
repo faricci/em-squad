@@ -8,6 +8,7 @@ agents:
     input_prompt: "Enter your note:"
     output_type: triage
     distributor: markdown
+    skill: skills/note-triage/skill.md
 
   - id: onboarding
     name: Onboard New Agent
@@ -18,3 +19,4 @@ agents:
     input_prompt: "Describe the new agent (purpose, responsibilities, expected input/output):"
     output_type: onboarding
     distributor: markdown
+    skill: skills/onboarding/skill.md

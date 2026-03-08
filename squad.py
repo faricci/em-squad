@@ -5,6 +5,7 @@ squad.py — Interactive CLI for em-squad.
 Usage:
     python squad.py
 """
+import json
 import sys
 from pathlib import Path
 
@@ -26,6 +27,7 @@ console = Console()
 _ACTION_RUN_AGENT = "Run Agent"
 _ACTION_RUN_EVALS = "Run Evals"
 _ACTION_PROMOTIONS = "Detect Promotions"
+_ACTION_CLOSE_TASK = "Close Task"
 
 
 def main() -> None:
@@ -47,6 +49,7 @@ def main() -> None:
             _ACTION_RUN_AGENT,
             _ACTION_RUN_EVALS,
             _ACTION_PROMOTIONS,
+            _ACTION_CLOSE_TASK,
         ],
     ).ask()
 
@@ -59,6 +62,10 @@ def main() -> None:
 
     if action == _ACTION_PROMOTIONS:
         _run_promotions()
+        return
+
+    if action == _ACTION_CLOSE_TASK:
+        _run_close_task()
         return
 
     # Default: run agent
@@ -140,6 +147,50 @@ def _run_promotions() -> None:
     if applied > 0:
         console.print("[dim]Rules written to context/agent-directives.md[/dim]")
         console.print("[dim]Log written to memory/observations/[/dim]")
+
+
+def _run_close_task() -> None:
+    tasks_jsonl = ROOT / "output" / "tasks.jsonl"
+    if not tasks_jsonl.exists():
+        console.print("[yellow]No tasks found. Run Note Triage first.[/yellow]")
+        return
+
+    records = []
+    for line in tasks_jsonl.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line:
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+
+    open_tasks = [r for r in records if r.get("status") == "open"]
+    if not open_tasks:
+        console.print("[yellow]No open tasks found.[/yellow]")
+        return
+
+    choices = [
+        questionary.Choice(
+            title=f"[{r['date']}] {r['decision'].upper()} — {r['note'][:60]}",
+            value=r,
+        )
+        for r in open_tasks
+    ]
+
+    selected = questionary.select("Select task to close:", choices=choices).ask()
+    if selected is None:
+        return
+
+    for r in records:
+        if r["id"] == selected["id"]:
+            r["status"] = "closed"
+
+    tasks_jsonl.write_text(
+        "\n".join(json.dumps(r) for r in records) + "\n",
+        encoding="utf-8",
+    )
+    console.print(f"[green]Closed:[/green] {selected['note'][:60]}")
+    console.print(f"[dim]Updated: output/tasks.jsonl[/dim]")
 
 
 def _render_triage(d) -> None:
