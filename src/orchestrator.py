@@ -15,13 +15,16 @@ from dataclasses import asdict
 from typing import Any
 
 from src.context_engine.registry import get_agent
-from src.context_engine.validator import validate_pre_run, validate_post_run
+from src.context_engine.validator import validate_pre_run, validate_post_run, validate_lifecycle
 from src.distributors.markdown import MarkdownDistributor
 
 
 def run(agent_id: str, user_input: str) -> Any:
     """Run an agent by id with C-DAD validation and distribution."""
     agent = get_agent(agent_id)
+
+    # Lifecycle check: block draft/retired, warn deprecated
+    validate_lifecycle(agent.contract)
 
     # Pre-run: verify all contract context sources exist on disk
     validate_pre_run(agent.contract)

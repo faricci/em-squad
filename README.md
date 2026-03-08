@@ -74,7 +74,10 @@ em-agent-framework/
 │   ├── notes/              # Parked notes (Layer 1)
 │   └── observations/       # Promoted patterns (Layer 1)
 ├── output/                 # Distributor output: tasks.md, backlog.md
-├── evals/                  # Eval criteria (manual Phase 1, automated Phase 3)
+├── docs/adr/               # Architecture Decision Records (5 retroactive ADRs)
+├── evals/
+│   ├── fixtures/           # Gold-standard test notes (10 seeded fixtures)
+│   └── results/            # Eval run results (JSONL, per day)
 ├── requirements.txt
 └── src/
     ├── orchestrator.py     # Agent runner: C-DAD validation + distribution hooks
@@ -85,7 +88,10 @@ em-agent-framework/
     │   ├── loader.py
     │   ├── registry.py     # Registry loader (reads agents.yaml)
     │   ├── memory.py       # Hot/Cold/Audit memory engine (BM25 search)
-    │   └── validator.py    # C-DAD runtime validator
+    │   ├── validator.py    # C-DAD runtime validator (lifecycle + pre/post-run)
+    │   └── promoter.py     # Vertical promotion detector (L5 → L4)
+    ├── evals/
+    │   └── runner.py       # Eval runner: fixtures → triage → EM review → accuracy report
     └── distributors/
         ├── base.py         # Distributor protocol (interface)
         └── markdown.py     # Default: writes to output/
@@ -137,7 +143,7 @@ No code changes needed — the agent reads context at runtime.
 
 - **Phase 1 (done):** Note Triage Agent, Onboarding Agent, contracts, context files, history log
 - **Phase 2 (done):** Memory architecture (Hot/Cold/Audit, BM25), C-DAD runtime validation, pluggable distributor
-- **Phase 3:** Framework completion — eval runner, vertical promotion, ADR authoring (`docs/adr/`), contract lifecycle transitions, LanceDB vector search, Notion/GitHub distributor
+- **Phase 3 (done):** Framework completion — 5 ADRs (`docs/adr/`), contract lifecycle enforcement (draft/deprecated/retired), eval runner with 10 fixture notes and EM correction loop, vertical promotion detector (JSONL scan → rule proposal → agent-directives.md)
 - **Phase 4:** Agent import — read existing EM assistant capabilities, translate into framework-compliant agents (contract + skill + Python skeleton + registry entry)
 - **Phase 5:** Templatization — setup wizard, remove personal context, framework usable by any EM team. Followed by a real-use branch (2+ weeks) to field-test before publication. Bugs found → fix on main branch.
 - **Phase 6:** Publication — Tessl skill registry → GitHub README polish → Medium article

@@ -1,0 +1,10 @@
+{"note": "The deploy pipeline has been flaky for 3 days. Anna keeps manually retrying jobs every morning before standup.", "expected_decision": "assign", "expected_owner": "Anna"}
+{"note": "Prometheus alert fired twice this week for high memory on the staging k8s cluster — no one investigated.", "expected_decision": "assign", "expected_owner": "Domenico"}
+{"note": "We should migrate the main k8s cluster from 1.27 to 1.30 before end of Q2 — EOL is approaching.", "expected_decision": "task", "expected_owner": null}
+{"note": "Idea: maybe we could use AI to auto-generate runbooks from incident postmortems. Something to explore someday.", "expected_decision": "park", "expected_owner": null}
+{"note": "AWS bill jumped 40% this month compared to last month. Need to understand what caused the spike.", "expected_decision": "assign", "expected_owner": "Giulia"}
+{"note": "Security scan flagged a critical CVE in our base Docker image — needs patching before next release.", "expected_decision": "assign", "expected_owner": "Giulia"}
+{"note": "The Grafana dashboard for the payment service is outdated — it still shows old metrics from before the refactor.", "expected_decision": "assign", "expected_owner": "Domenico"}
+{"note": "I want to think more about how we structure our on-call rotation once the team grows. Not urgent.", "expected_decision": "park", "expected_owner": null}
+{"note": "Anna and Domenico have overlapping ownership on the internal deployment tooling. Need to clarify ownership before the next sprint.", "expected_decision": "task", "expected_owner": null}
+{"note": "New team member joining next Monday — Giulia needs to prepare the k8s access and Anna needs to set up CI/CD permissions before they arrive.", "expected_decision": "task", "expected_owner": null}

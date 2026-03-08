@@ -23,6 +23,10 @@ from src.orchestrator import run as run_agent
 
 console = Console()
 
+_ACTION_RUN_AGENT = "Run Agent"
+_ACTION_RUN_EVALS = "Run Evals"
+_ACTION_PROMOTIONS = "Detect Promotions"
+
 
 def main() -> None:
     console.print()
@@ -37,6 +41,27 @@ def main() -> None:
         )
         console.print()
 
+    action = questionary.select(
+        "What would you like to do?",
+        choices=[
+            _ACTION_RUN_AGENT,
+            _ACTION_RUN_EVALS,
+            _ACTION_PROMOTIONS,
+        ],
+    ).ask()
+
+    if action is None:
+        sys.exit(0)
+
+    if action == _ACTION_RUN_EVALS:
+        _run_evals()
+        return
+
+    if action == _ACTION_PROMOTIONS:
+        _run_promotions()
+        return
+
+    # Default: run agent
     agents = load_registry()
     choices = [questionary.Choice(title=a.name, value=a) for a in agents]
 
@@ -67,6 +92,54 @@ def main() -> None:
         _render_onboarding(result, agent)
     else:
         console.print(result)
+
+
+def _run_evals() -> None:
+    from src.evals.runner import run_eval
+    run_eval(console, interactive=True)
+
+
+def _run_promotions() -> None:
+    from src.context_engine.promoter import detect_promotions, apply_promotion
+
+    console.print()
+    console.print("[dim]Scanning history for promotion candidates...[/dim]")
+    candidates = detect_promotions(min_occurrences=3)
+
+    if not candidates:
+        console.print("[yellow]No promotion candidates found. Run more notes to build history.[/yellow]")
+        return
+
+    console.print(f"\nFound [bold]{len(candidates)}[/bold] candidate(s).\n")
+
+    applied = 0
+    skipped = 0
+
+    for i, candidate in enumerate(candidates, 1):
+        console.print(f"[bold]Candidate {i}/{len(candidates)}[/bold] — {candidate['pattern_type']}")
+        console.print(f"Proposed rule: [cyan]{candidate['proposed_rule']}[/cyan]")
+        console.print(f"Section: [dim]{candidate['section']}[/dim]")
+        console.print("Evidence:")
+        for note in candidate["evidence"][:3]:
+            console.print(f"  [dim]· {note[:100]}[/dim]")
+        console.print()
+
+        confirm = questionary.confirm("Apply this rule to agent-directives.md?", default=False).ask()
+        if confirm is None:
+            break
+        if confirm:
+            apply_promotion(candidate["proposed_rule"], candidate["section"])
+            console.print("[green]Applied.[/green]")
+            applied += 1
+        else:
+            console.print("[dim]Skipped.[/dim]")
+            skipped += 1
+        console.print()
+
+    console.print(f"[bold]Done.[/bold] Applied: {applied} · Skipped: {skipped}")
+    if applied > 0:
+        console.print("[dim]Rules written to context/agent-directives.md[/dim]")
+        console.print("[dim]Log written to memory/observations/[/dim]")
 
 
 def _render_triage(d) -> None:

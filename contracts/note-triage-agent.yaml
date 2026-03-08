@@ -11,7 +11,7 @@ contract:
   provenance:
     author: "Fabiano Ricci"
     published: "2026-03-07"
-    adr: null  # Phase 3: docs/adr/ADR-001-note-triage-agent.md
+    adr: "docs/adr/ADR-002-note-triage-agent.md"
 
   responsibilities:
     - Parse unstructured notes into structured intent

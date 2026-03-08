@@ -11,7 +11,7 @@ contract:
   provenance:
     author: "Fabiano Ricci"
     published: "2026-03-07"
-    adr: null  # Phase 3: docs/adr/ADR-000-em-agent-orchestrator.md
+    adr: "docs/adr/ADR-001-em-agent-orchestrator.md"
 
   responsibilities:
     - Delegate incoming inputs to appropriate sub-agents

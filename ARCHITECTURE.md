@@ -76,11 +76,13 @@ can become a governed organizational asset.
 - Skills are versioned, reusable, and can be published to tessl.io/registry
 
 ### Layer 4 — Orchestration
-- `src/orchestrator.py` — EM Agent: runs agents with C-DAD validation + distribution hooks
-- `squad.py` — Interactive CLI: reads registry, presents menu, routes to selected agent
+- `src/orchestrator.py` — EM Agent: runs agents with C-DAD validation (lifecycle + pre-run + post-run) + distribution hooks
+- `squad.py` — Interactive CLI: action menu (Run Agent / Run Evals / Detect Promotions)
 - `src/agents/note_triage.py` — Note Triage Agent: implements the triage contract
 - `src/agents/onboarding.py` — Onboarding Agent: generates new agent artifacts from description
-- `src/context_engine/validator.py` — C-DAD runtime validator (pre-run + post-run checks)
+- `src/context_engine/validator.py` — C-DAD runtime validator (lifecycle check, pre-run context sources, post-run output schema)
+- `src/context_engine/promoter.py` — Vertical promotion detector: scans JSONL history, proposes L5→L4 rules, applies to agent-directives.md
+- `src/evals/runner.py` — Eval runner: runs fixture notes through triage, collects EM corrections, reports accuracy
 - `src/distributors/markdown.py` — Default distributor: writes to `output/tasks.md` + `output/backlog.md`
 - Each agent has a contract that defines its scope, boundaries, and validation rules
 
@@ -172,9 +174,16 @@ Each agent has a contract (in `contracts/`) that encodes:
 Contracts are not static documents. They evolve as patterns are promoted upward.
 A routing rule that starts as an EM correction (L5) can become a contract invariant (L2).
 
-**Phase 3 additions:** ADR documents (`docs/adr/`) linked from each contract's `provenance.adr`
-field — capturing why each agent was designed the way it was, alternatives considered,
-and decisions that must not be silently reversed.
+**Phase 3 additions:**
+- ADR documents (`docs/adr/`) — 5 retroactive ADRs covering every major architectural decision.
+  Linked from each contract's `provenance.adr` field. See `docs/adr/README.md` for the index.
+- Contract lifecycle enforcement — `validate_lifecycle()` in `validator.py` blocks `draft`/`retired`
+  contracts, warns on `deprecated`. Called before every agent run.
+- Eval runner — `src/evals/runner.py` with gold-standard fixtures (`evals/fixtures/notes.jsonl`),
+  EM correction loop, and accuracy report (classification + owner + no-note-loss).
+- Vertical promotion detector — `src/context_engine/promoter.py` scans JSONL history for
+  routing and effort patterns, proposes rules to the EM, and appends approved rules to
+  `context/agent-directives.md` with an observations log.
 
 ---
 

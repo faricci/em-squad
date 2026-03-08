@@ -26,6 +26,28 @@ class ValidationResult:
     errors: list
 
 
+def validate_lifecycle(contract_path: str) -> None:
+    """
+    Block execution if lifecycle=draft or retired. Warn if deprecated.
+    Raises ContractViolationError on hard failures.
+    """
+    import sys
+    contract = _load_contract(contract_path)
+    lifecycle = contract.get("lifecycle", "active")
+
+    if lifecycle == "draft":
+        raise ContractViolationError(
+            f"[{contract_path}] lifecycle=draft — not ready for production."
+        )
+    elif lifecycle == "deprecated":
+        print(f"Warning: [{contract_path}] is deprecated. Consider upgrading.", file=sys.stderr)
+    elif lifecycle == "retired":
+        raise ContractViolationError(
+            f"[{contract_path}] lifecycle=retired — agent is no longer operational."
+        )
+    # active: pass through
+
+
 def validate_pre_run(contract_path: str) -> ValidationResult:
     """
     Verify that all context_sources declared in the contract exist on disk.
